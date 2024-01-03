@@ -11,3 +11,6 @@
 6. Pytest: A testing framework that allows you to write test cases in a simple and scalable way.
 
 7. Gunicorn: A Python WSGI HTTP Server for UNIX. It's a pre-fork worker model.
+
+
+Gonna to change Database Query from SQLAcademy to MongoDB or SQLPostgres.
