@@ -1,17 +1,28 @@
-from . import db 
+from bson.objectid import ObjectId
+from . import mongo
 
-class Product(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(128))
-    description = db.Column(db.String(128))
-    price = db.Column(db.Float)
-    orders = db.relationship('Order', backref='product', lazy=True)
+class Product:
+    def __init__(self, name, description, price):
+        self.name = name
+        self.description = description
+        self.price = price
 
-    def to_dict(self):
+    @staticmethod
+    def to_dict(product):
         return {
-            'id': self.id,
-            'name': self.name,
-            'price': self.price,
-            'description': self.description,
-            'orders': [order.to_dict() for order in self.orders]
+            'id': str(product['_id']),
+            'name': product['name'],
+            'description': product['description'],
+            'price': product['price'],
+            'orders': [str(order) for order in product['orders']]
         }
+
+    @staticmethod
+    def from_db(product_id):
+        product = mongo.db.products.find_one({'_id': ObjectId(product_id)})
+        return Product.to_dict(product) if product else None
+
+    def save_to_db(self):
+        product = {'name': self.name, 'description': self.description, 'price': self.price, 'orders': []}
+        result = mongo.db.products.insert_one(product)
+        return str(result.inserted_id)
